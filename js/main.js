@@ -41,13 +41,10 @@ const CHARACTER = 'CH0334';
 let modelResolution = '8k';
 const HAS_A = { eye: false, point: true };
 
-// All voicelines are manually timed for start point and duration. This may not be the most optimized solution, but works for all intents and purposes.
+// Subtitles follow the Talk events in each Spine animation.
 
 const AUDIO_DETAIL = [
 	{
-		time: 15000,
-		count: 2,
-		startTimes: [800, 7000],
 		dialog: {
 			Japanese: [
 				"えへへ。先生、驚きましたか？",
@@ -64,9 +61,6 @@ const AUDIO_DETAIL = [
 		}
 	},
 	{
-		time: 18000,
-		count: 2,
-		startTimes: [2300, 8100],
 		dialog: {
 			Japanese: [
 				"とても……綺麗ですね。",
@@ -83,9 +77,6 @@ const AUDIO_DETAIL = [
 		}
 	},
 	{
-		time: 14000,
-		count: 2,
-		startTimes: [2800, 7300],
 		dialog: {
 			Japanese: [
 				"でも……不思議です。",
@@ -102,9 +93,6 @@ const AUDIO_DETAIL = [
 		}
 	},
 	{
-		time: 15000,
-		count: 1,
-		startTimes: [1800],
 		dialog: {
 			Japanese: [
 				"あの星空みたいに、この世界は、みんなで分け合っても大丈夫なくらい美しいものであふれているのに……。"
@@ -118,9 +106,6 @@ const AUDIO_DETAIL = [
 		}
 	},
 	{
-		time: 13000,
-		count: 1,
-		startTimes: [2700],
 		dialog: {
 			Japanese: [
 				"……やっぱり、アリスにはまだわかりません。"
@@ -229,48 +214,51 @@ function releaseHeadpatOnExit() {
 }
 
 function playVoiceline() {
-	isVoicelinePlaying = true;
-	spineData.state.setEmptyAnimation(1, 1);
-	spineData.state.setEmptyAnimation(2, 1);
-	spineData.state.addAnimation(1, `Talk_0${currentVoiceline}_M`, false, 0);
-	spineData.state.addAnimation(2, `Talk_0${currentVoiceline}_A`, false, 0);
-	spineData.state.addEmptyAnimation(1, 0.5, 0);
-	spineData.state.addEmptyAnimation(2, 0.5, 0);
+	const state = spineData.state;
+	const animationName = `Talk_0${currentVoiceline}`;
+	const { dialog } = AUDIO_DETAIL[currentVoiceline - 1];
+	const motion = state.setAnimation(1, `${animationName}_M`, false);
+	const expression = state.setAnimation(2, `${animationName}_A`, false);
+	state.addEmptyAnimation(1, 0.5, motion.animationEnd);
+	state.addEmptyAnimation(2, 0.5, expression.animationEnd);
 
-	let trackDetails = AUDIO_DETAIL[currentVoiceline - 1];
-
-	const timeout1 = setTimeout(function () {
-		isVoicelinePlaying = false;
-		acceptingClick = true;
-		// 当达到末尾时循环回到第一句
-		if (currentVoiceline >= AUDIO_DETAIL.length) {
-			currentVoiceline = 1;
-		} else {
-			currentVoiceline = currentVoiceline + 1;
-		}
-	}, trackDetails.time);
-	voicelineTimeouts.push(timeout1);
-
-	for (let i = 0; i < trackDetails.count; i++) {
-		let track;
-		if (trackDetails.count == 1) track = new Audio(`./assets/audio/${CHARACTER}_memoriallobby_${currentVoiceline}.ogg`);
-		else track = new Audio(`./assets/audio/${CHARACTER}_memoriallobby_${currentVoiceline}_${(i + 1)}.ogg`);
+	const cues = motion.animation.timelines
+		.flatMap(timeline => timeline.events || [])
+		.filter(event => event.data.name === 'Talk');
+	const clips = new Map(cues.map((event, index) => {
+		const filename = CHARACTER + event.stringValue.slice(CHARACTER.length).toLowerCase();
+		const track = new Audio(`./assets/audio/${filename}.ogg`);
+		track.preload = 'auto';
 		track.volume = volume;
-		const timeout2 = setTimeout(function () {
-			track.play();
-			currentTracks.push({ track, index: i }); // 记录当前播放的音频
+		return [event, { track, dialog, index }];
+	}));
+
+	isVoicelinePlaying = true;
+	motion.listener = {
+		event: (_entry, event) => {
+			const clip = clips.get(event);
+			if (!clip) return;
+			const { track, index } = clip;
+			currentTracks.push(clip);
+			const finish = () => {
+				if (!currentTracks.includes(clip)) return;
+				currentTracks = currentTracks.filter(active => active !== clip);
+				if (!currentTracks.length) textbox.style.opacity = 0;
+			};
+			track.addEventListener('ended', finish, { once: true });
+			track.play().catch(finish);
+
 			if (dialogBox) {
-				const selectedLanguage = window.selectedLanguage || 'Japanese'; // 使用全局语言变量
-				textbox.innerHTML = trackDetails.dialog[selectedLanguage][i];
-				if (dialogBox) textbox.style.opacity = 1; // 确保仅当显示对话框时生效
-				track.addEventListener('ended', function () {
-					currentTracks = currentTracks.filter(t => t.track !== track); // 移除结束的音频
-					textbox.style.opacity = 0;
-				});
+				textbox.textContent = dialog[window.selectedLanguage][index];
+				textbox.style.opacity = 1;
 			}
-		}, trackDetails.startTimes[i]);
-		voicelineTimeouts.push(timeout2);
-	}
+		},
+		complete: () => {
+			isVoicelinePlaying = false;
+			acceptingClick = true;
+			currentVoiceline = currentVoiceline % AUDIO_DETAIL.length + 1;
+		}
+	};
 }
 
 // Hitbox Scaling
@@ -514,12 +502,10 @@ function init() {
 			if (props.dialoglanguage) {
 				window.selectedLanguage = props.dialoglanguage.value; // 更新全局语言变量
 				// 更新当前播放的音频文本
-				currentTracks.forEach(({ track, index }) => {
-					const trackDetails = AUDIO_DETAIL[currentVoiceline - 1];
-					if (dialogBox && trackDetails.dialog[window.selectedLanguage]) {
-						textbox.innerHTML = trackDetails.dialog[window.selectedLanguage][index];
-					}
-				})
+				const clip = currentTracks[currentTracks.length - 1];
+				if (dialogBox && clip) {
+					textbox.textContent = clip.dialog[window.selectedLanguage][clip.index];
+				}
 			}
 
 			if (props.bgmfile) {
@@ -605,7 +591,6 @@ function init() {
 let introAudioIsPlaying = false;
 let introAudioTracks = [];
 let introTimeouts = [];
-let voicelineTimeouts = [];
 
 // Function to reload the model with a new resolution
 function reloadModel() {
@@ -659,9 +644,6 @@ function reloadModel() {
 	introTimeouts.forEach(timeout => clearTimeout(timeout));
 	introTimeouts = [];
 
-	// Clear all voiceline timeouts
-	voicelineTimeouts.forEach(timeout => clearTimeout(timeout));
-	voicelineTimeouts = [];
 	isVoicelinePlaying = false;
 
 	// Hide dialog box
