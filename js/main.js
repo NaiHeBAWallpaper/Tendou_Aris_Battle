@@ -45,7 +45,8 @@ const subtitleLocales = {
 	Chinese: 'zh-Hans',
 	TraditionalChinese: 'zh-Hant',
 	Japanese: 'ja',
-	Korean: 'ko'
+	Korean: 'ko',
+	Thai: 'th'
 };
 let isVoicelinePlaying = false;
 
@@ -63,21 +64,22 @@ const AUDIO_DETAIL = [
 				"先生と一緒に、この夜空を見たくて……呼んだんです。"
 			],
 			English: [
-				"Ehehe. Did Aris surprise you, Sensei?",
-				"I wanted to gaze at this night sky together with you... so Aris called for you."
+				"Eheehee. Sensei, were you surprised?",
+				"I called to you because I wanted you to see the night sky with me."
 			],
 			Chinese: [
 				"诶嘿嘿。老师，吓到了吗？",
 				"因为想要和老师欣赏这片夜空……所以呼唤了您。"
 			],
 			TraditionalChinese: [
-				"誒嘿嘿。老師，嚇到了嗎？",
-				"因為想要和老師欣賞這片夜空……所以呼喚了您。"
+				"耶嘿嘿。老師，嚇到你了嗎？",
+				"因為想和老師一起欣賞這片夜空……所以才會呼喚你。"
 			],
 			Korean: [
-				"아리스가 놀라게 했나?",
-				"너와 함께 밤하늘을 바라보고 싶어서 아리스가 널 불렀어"
-			]
+				"에헤헤. 선생님, 놀랐습니까?",
+				"그저 선생님과 함께, 이 밤하늘을 보고 싶어서 불러 봤습니다."
+			],
+			Thai: ["แหะๆๆ คุณครู ตกใจเหรอคะ?","อาริสึแค่อยากดู ท้องฟ้ายามค่ำคืนกับคุณครู ก็เลยลองเรียกดูค่ะ"]
 		}
 	},
 	{
@@ -87,21 +89,22 @@ const AUDIO_DETAIL = [
 				"アリスの世界にも、まだ行ったことのない世界にも……きっとこんな綺麗なものがたくさんあると思うんです。"
 			],
 			English: [
-				"It is so... beautiful.",
-				"In Aris's world, and even in worlds I have yet to visit... I am sure there are many more beautiful things just like this."
+				"Is it not beautiful?",
+				"I am sure that in this world, and even in all the worlds I have yet to visit... ...there must be plenty of beautiful things, just like this."
 			],
 			Chinese: [
 				"真是……十分美丽呢。",
 				"爱丽丝的世界也好，还没有去过的世界也好……肯定还会有很多这样美好的事物。"
 			],
 			TraditionalChinese: [
-				"真是……十分美麗呢。",
-				"愛麗絲的世界也好，還沒有去過的世界也好……肯定還會有很多這樣美好的事物。"
+				"相當……美麗呢。",
+				"在愛麗絲的世界，以及尚未去過的世界……想必都有很多這麼美麗的事物吧。"
 			],
 			Korean: [
-				"너무 아름답습니다.",
-				"아리스의 세상, 그리고 아직 방문하지 못한 세상에도 이런 아름다운 것들이 더 많다고 확신합니다."
-			]
+				"정말로, 아름답네요.",
+				"아리스의 세계에는, 그리고 아직 가보지 못한 세계에도…… 분명, 이런 아름다운 것들이 잔뜩 있을 테지요."
+			],
+			Thai: ["สวยมากๆ เลย ใช่มั้ยคะ?","ในโลกของอาริสึ และโลกที่ยังไม่เคยไป... คงมีสิ่งสวยงามแบบนี้ อยู่เยอะเลยใช่มั้ยคะ"]
 		}
 	},
 	{
@@ -111,21 +114,22 @@ const AUDIO_DETAIL = [
 				"世界って、こんなに綺麗なのに……どうして人は争うんでしょう？"
 			],
 			English: [
-				"But... it is strange.",
-				"The world is so beautiful... so why is it that people still choose to fight each other?"
+				"That is why it is so strange.",
+				"When there is so much beauty in this world... Why do people choose to fight?"
 			],
 			Chinese: [
 				"但是，真不可思议。",
 				"世界是，这么地美丽，但为何人与人之间还是会有纷争呢？"
 			],
 			TraditionalChinese: [
-				"但是，真不可思議。",
-				"世界是，這麼地美麗，但為何人與人之間還是會有紛爭呢？"
+				"但是……很神奇。",
+				"世界明明這麼美麗……為什麼人卻要爭鬥呢？"
 			],
 			Korean: [
-				"하지만... 이상해요.",
-				"세상은 너무 아름다워서 왜 사람들은 여전히 서로 싸우고 싶어하는 걸까요?"
-			]
+				"하지만 이상합니다.",
+				"세상은 이토록 아름다운데…… 사람들은 어째서 싸우는 걸까요?"
+			],
+			Thai: ["แต่ก็แปลกนะคะ","โลกนี้สวยงามถึงเพียงนี้... แต่ทำไมผู้คน ถึงได้ทะเลาะกันล่ะคะ?"]
 		}
 	},
 	{
@@ -134,17 +138,18 @@ const AUDIO_DETAIL = [
 				"あの星空みたいに、この世界は、みんなで分け合っても大丈夫なくらい美しいものであふれているのに……。"
 			],
 			English: [
-				"Just like that starry sky... this world is overflowing with enough beauty for everyone to share together, and yet..."
+				"Just like the stars that speckle the night, I am sure the world is full of more than enough beautiful things for everyone to share."
 			],
 			Chinese: [
 				"就如同那片星空一般，这个世界的美好，明明已经可以多到和大家一起分享也没关系的程度了……"
 			],
 			TraditionalChinese: [
-				"就如同那片星空一般，這個世界的美好，明明已經可以多到和大家一起分享也沒關係的程度了……"
+				"就像那片星空一樣，這個世界，明明充滿著大家一起分享也足夠的美麗事物才對……"
 			],
 			Korean: [
-				"마치 그 별이 가득한 하늘처럼 이 세상은 모두가 함께 공유할 수 있는 아름다움으로 가득하고 있지만..."
-			]
+				"저 밤하늘의 별처럼, 이 세상에는 모두가 나눠 가져도 괜찮을 만큼 아름다운 것들로 넘쳐날 텐데."
+			],
+			Thai: ["โลกใบนี้มีสิ่งสวยงาม มากพอให้เราทุกคนแบ่งกันได้ เหมือนกับดวงดาวในท้องฟ้านั้นแท้ๆ"]
 		}
 	},
 	{
@@ -153,17 +158,18 @@ const AUDIO_DETAIL = [
 				"……やっぱり、アリスにはまだわかりません。"
 			],
 			English: [
-				"In the end... Aris still does not quite understand."
+				"...It really is difficult for me to understand."
 			],
 			Chinese: [
 				"……果然，爱丽丝还是不能理解。"
 			],
 			TraditionalChinese: [
-				"……果然，愛麗絲還是不能理解。"
+				"……果然，愛麗絲還是不太明白。"
 			],
 			Korean: [
-				"결국 아리스는 아직도 잘 이해하지 못합니다."
-			]
+				"……역시, 아리스는 아직 잘 모르겠습니다."
+			],
+			Thai: ["อาริสึ... ยังไม่ค่อยเข้าใจ เรื่องแบบนี้จริงๆ ด้วยค่ะ"]
 		}
 	}
 ];
@@ -297,7 +303,7 @@ function playVoiceline() {
 			track.play().catch(finish);
 
 			if (dialogBox) {
-				textbox.textContent = dialog[window.selectedLanguage][index];
+				textbox.textContent = getSubtitleText(dialog, window.selectedLanguage, index);
 				textbox.style.opacity = 1;
 			}
 		},
@@ -496,6 +502,16 @@ function setMouse(event) {
 	return { x: ax - canvas.width * positionX, y: ay - canvas.height * positionY };
 }
 
+function getSubtitleText(dialog, language, index) {
+	let text = dialog?.[language]?.[index];
+	if (text == null && language === 'Thai') {
+		language = 'English';
+		text = dialog?.[language]?.[index];
+	}
+	textbox.lang = subtitleLocales[language];
+	return text ?? "";
+}
+
 function updateSubtitleLanguage() {
 	let language = subtitleLanguagePreference;
 	if (language === 'auto') {
@@ -509,6 +525,8 @@ function updateSubtitleLanguage() {
 			language = 'Japanese';
 		} else if (primary === 'ko' || primary === 'korean' || primary === 'koreana') {
 			language = 'Korean';
+		} else if (primary === 'th' || primary === 'thai') {
+			language = 'Thai';
 		} else {
 			language = 'English';
 		}
@@ -518,7 +536,7 @@ function updateSubtitleLanguage() {
 	window.selectedLanguage = language;
 	textbox.lang = subtitleLocales[language];
 	const clip = currentTracks.at(-1);
-	if (dialogBox && clip) textbox.textContent = clip.dialog[language][clip.index];
+	if (dialogBox && clip) textbox.textContent = getSubtitleText(clip.dialog, language, clip.index);
 }
 
 function init() {
